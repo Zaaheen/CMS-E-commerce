@@ -33,4 +33,12 @@ public class Taxonomy {
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
     private List<Taxonomy> children;
+
+    // Hàm domain helper giúp cập nhật dữ liệu
+    public void updateInformation(String name, String slug, String type, Taxonomy parent) {
+        this.name = name;
+        this.slug = slug;
+        this.type = type != null ? type.toUpperCase() : this.type;
+        this.parent = parent;
+    }
 }

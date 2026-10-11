@@ -22,7 +22,7 @@ public class Post {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id")
+    @JoinColumn(name = "author_id", nullable = false)
     private User author;
 
     @Column(nullable = false)
@@ -34,13 +34,12 @@ public class Post {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @Column(length = 30)
+    @Column(length = 30, nullable = false)
     private String status; // 'DRAFT', 'PUBLISHED', 'ARCHIVED'
 
     @Column(name = "published_at")
     private OffsetDateTime publishedAt;
 
-    // Lưu trữ JSON linh hoạt trong PostgreSQL
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "custom_fields", columnDefinition = "jsonb")
     private Map<String, Object> customFields;
@@ -51,5 +50,51 @@ public class Post {
             joinColumns = @JoinColumn(name = "post_id"),
             inverseJoinColumns = @JoinColumn(name = "taxonomy_id")
     )
+    @Builder.Default
     private Set<Taxonomy> taxonomies = new HashSet<>();
+
+    @OneToMany(mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @Builder.Default
+    private List<Region> regions = new ArrayList<>();
+
+    @Column(name = "created_at", updatable = false)
+    private OffsetDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private OffsetDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = OffsetDateTime.now();
+        this.updatedAt = OffsetDateTime.now();
+        if (this.status == null) {
+            this.status = "DRAFT";
+        }
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = OffsetDateTime.now();
+    }
+
+    /**
+     * Rich Domain Method: Cập nhật thông tin chính của bài viết
+     */
+    public void updateInfomation(String title, String slug, String content, Map<String, Object> customFields, Set<Taxonomy> taxonomies) {
+        this.title = title;
+        this.slug = slug;
+        this.content = content;
+        this.customFields = customFields;
+        this.taxonomies = taxonomies;
+    }
+
+    /**
+     * Rich Domain Method: Đổi trạng thái bài viết
+     */
+    public void changeStatus(String newStatus) {
+        this.status = newStatus.toUpperCase();
+        if ("PUBLISHED".equalsIgnoreCase(newStatus) && this.publishedAt == null) {
+            this.publishedAt = OffsetDateTime.now();
+        }
+    }
 }
