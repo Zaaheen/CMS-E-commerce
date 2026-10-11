@@ -3,9 +3,9 @@ spring:
     name: cms-ecommerce
 
   datasource:
-    url: ${SUPABASE_DB_URL}
-    username: ${SUPABASE_DB_USERNAME}
-    password: ${SUPABASE_DB_PASSWORD}
+    url: jdbc:postgresql://aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres?user=postgres.txasiybjterjgwjavcvg&password=cmsecommerc
+    username: postgres.txasiybjterjgwjavcvg
+    password: cmsecommerc
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
@@ -24,3 +24,13 @@ spring:
 
   flyway:
     enabled: false
+
+  app:
+    jwt:
+      secret: ${JWT_SECRET:CMS_ECOMMERCE_SECRET_KEY_MUST_BE_AT_LEAST_32_BYTES_LONG_2026}
+      expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+
+  cloudinary:
+    cloud-name: r3ftqtcb
+    api-key: 331255455129789
+    api-secret: X3P6QeVQ7joiMtPRNNquOSaRTSE

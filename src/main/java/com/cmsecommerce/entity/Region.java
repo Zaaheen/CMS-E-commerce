@@ -41,4 +41,16 @@ public class Region {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
+
+    // Hàm domain helper giúp cập nhật dữ liệu
+    public void updateInformation(String externalId, String name, String slug, Region parent, Integer level) {
+        this.externalId = externalId;
+        this.name = name;
+        this.slug = slug;
+        this.parent = parent;
+        this.level = level;
+    }
+    public void updatePath(String path) {
+        this.path = path;
+    }
 }
